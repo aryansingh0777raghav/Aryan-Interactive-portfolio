@@ -1,697 +1,797 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <!-- 🔧 UPDATE: Change the title to match your name -->
-  <title>Aryan Singh — Portfolio Terminal</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    
-    body {
-      font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
-      /* 🎨 CUSTOMIZE: Change background gradient colors to match your theme */
-      background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-      /* 🎨 CUSTOMIZE: Change primary text color */
-      color: #00ffa1;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    
-    .terminal-container {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 2rem;
-      position: relative;
-    }
-    
-    .terminal {
-      background: rgba(0, 0, 0, 0.85);
-      /* 🎨 CUSTOMIZE: Change terminal border color */
-      border: 2px solid #00ffa1;
-      border-radius: 15px;
-      box-shadow: 
-        /* 🎨 CUSTOMIZE: Change glow effect colors */
-        0 0 30px rgba(0, 255, 161, 0.3),
-        inset 0 0 30px rgba(0, 255, 161, 0.05);
-      width: 100%;
-      max-width: 1000px;
-      min-height: 600px;
-      backdrop-filter: blur(10px);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .terminal-header {
-      /* 🎨 CUSTOMIZE: Change header gradient colors */
-      background: linear-gradient(90deg, #00ffa1, #00d4ff);
-      padding: 12px 20px;
-      border-radius: 13px 13px 0 0;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    
-    .terminal-buttons {
-      display: flex;
-      gap: 8px;
-    }
-    
-    .btn {
-      width: 12px;
-      height: 12px;
-      border-radius: 50%;
-    }
-    
-    /* 🎨 CUSTOMIZE: Mac-style terminal buttons - change colors if needed */
-    .btn.close { background: #ff5f56; }
-    .btn.minimize { background: #ffbd2e; }
-    .btn.maximize { background: #27ca3f; }
-    
-    .terminal-title {
-      color: #000;
-      font-weight: bold;
-      font-size: 0.9rem;
-      margin-left: 10px;
-    }
-    
-    .terminal-content {
-      padding: 20px;
-      height: calc(100% - 44px);
-      overflow-y: auto;
-      scroll-behavior: smooth;
-    }
-    
-    .output {
-      white-space: pre-wrap;
-      line-height: 1.6;
-      margin-bottom: 1rem;
-      font-size: 14px;
-    }
-    
-    .input-line {
-      display: flex;
-      align-items: center;
-      border-top: 1px solid rgba(0, 255, 161, 0.2);
-      padding-top: 15px;
-      margin-top: 15px;
-    }
-    
-    .prompt {
-      /* 🎨 CUSTOMIZE: Change prompt color and glow */
-      color: #00ffa1;
-      font-weight: bold;
-      margin-right: 10px;
-      text-shadow: 0 0 10px rgba(0, 255, 161, 0.5);
-    }
-    
-    input[type="text"] {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #ffffff;
-      font-family: inherit;
-      font-size: 14px;
-      outline: none;
-      padding: 5px 0;
-      /* 🎨 CUSTOMIZE: Change cursor color */
-      caret-color: #00ffa1;
-    }
-    
-    input[type="text"]:focus {
-      /* 🎨 CUSTOMIZE: Change input focus background */
-      background: rgba(0, 255, 161, 0.05);
-      border-radius: 5px;
-      padding: 5px 10px;
-    }
-    
-    /* 🎨 CUSTOMIZE: Color scheme for different text types */
-    .primary { color: #00ffa1; text-shadow: 0 0 5px rgba(0, 255, 161, 0.3); }
-    .secondary { color: #00d4ff; text-shadow: 0 0 5px rgba(0, 212, 255, 0.3); }
-    .accent { color: #ff6b6b; text-shadow: 0 0 5px rgba(255, 107, 107, 0.3); }
-    .warning { color: #ffd93d; text-shadow: 0 0 5px rgba(255, 217, 61, 0.3); }
-    .success { color: #6bcf7f; text-shadow: 0 0 5px rgba(107, 207, 127, 0.3); }
-    .error { color: #ff5757; text-shadow: 0 0 5px rgba(255, 87, 87, 0.3); }
-    .muted { color: #888; }
-    
-    .link {
-      /* 🎨 CUSTOMIZE: Change link colors */
-      color: #00d4ff;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-bottom: 1px dotted rgba(0, 212, 255, 0.3);
-    }
-    
-    .link:hover {
-      color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
-      border-bottom-color: #00d4ff;
-    }
-    
-    .section-header {
-      font-size: 16px;
-      font-weight: bold;
-      margin: 20px 0 10px 0;
-      padding-bottom: 5px;
-      border-bottom: 2px solid rgba(0, 255, 161, 0.3);
-    }
-    
-    .command-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 10px;
-      margin: 15px 0;
-    }
-    
-    .command-item {
-      /* 🎨 CUSTOMIZE: Change command item styling */
-      background: rgba(0, 255, 161, 0.05);
-      border: 1px solid rgba(0, 255, 161, 0.2);
-      border-radius: 8px;
-      padding: 10px;
-      transition: all 0.3s ease;
-    }
-    
-    .command-item:hover {
-      background: rgba(0, 255, 161, 0.1);
-      border-color: #00ffa1;
-      transform: translateY(-2px);
-    }
-    
-    .status-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0, 0, 0, 0.9);
-      border-top: 1px solid rgba(0, 255, 161, 0.3);
-      padding: 10px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 12px;
-      backdrop-filter: blur(10px);
-    }
-    
-    .typing-indicator {
-      display: inline-block;
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      /* 🎨 CUSTOMIZE: Change typing indicator color */
-      background: #00ffa1;
-      animation: pulse 1.5s infinite;
-      margin-left: 5px;
-    }
-    
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-    
-    .matrix-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      /* 🎨 CUSTOMIZE: Change matrix background opacity */
-      opacity: 0.1;
-      z-index: -1;
-    }
-    
-    @media (max-width: 768px) {
-      .terminal {
-        margin: 10px;
-        min-height: calc(100vh - 20px);
-      }
-      
-      .terminal-content {
-        padding: 15px;
-      }
-      
-      .command-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aryan Singh — Portfolio Terminal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0a0a0a;
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Left side - Profile Image Section */
+        .profile-section {
+            width: 400px;
+            background-color: #1a1a1a;
+            border-right: 2px solid #333;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Name at top corner */
+        .profile-header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .profile-name {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+            margin-bottom: 5px;
+        }
+
+        .profile-title {
+            font-size: 14px;
+            color: #888;
+        }
+
+        /* Hanging image container */
+        .hanging-container {
+            position: absolute;
+            top: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        /* String/rope effect */
+        .hanging-string {
+            width: 2px;
+            height: 80px;
+            background: linear-gradient(to bottom, #666, #444);
+            margin: 0 auto;
+            position: relative;
+            transform-origin: top center;
+        }
+
+        .hanging-string::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -3px;
+            width: 8px;
+            height: 8px;
+            background: #666;
+            border-radius: 50%;
+        }
+
+        /* Profile image container with swing animation */
+        .profile-image-container {
+            width: 200px;
+            height: 240px;
+            border: 3px solid #444;
+            border-radius: 15px;
+            background-color: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            transform-origin: top center;
+            cursor: pointer;
+            animation: gentleSwing 4s ease-in-out infinite;
+        }
+
+        .profile-image-container:hover {
+            animation: strongSwing 1.5s ease-in-out infinite;
+        }
+
+        /* Gentle continuous swinging */
+        @keyframes gentleSwing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(1deg); }
+            75% { transform: rotate(-1deg); }
+        }
+
+        /* Stronger swing on hover */
+        @keyframes strongSwing {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(5deg); }
+            75% { transform: rotate(-5deg); }
+        }
+
+        /* Placeholder for image */
+        .image-placeholder {
+            color: #666;
+            text-align: center;
+            font-size: 12px;
+            line-height: 1.4;
+            padding: 20px;
+        }
+
+        /* Uncomment when adding actual image */
+        
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+        
+
+        /* GitHub icon at bottom */
+        .github-section {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        }
+
+        .github-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #333;
+            border: 2px solid #00ff00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00ff00;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 auto 10px;
+        }
+
+        .github-icon:hover {
+            background-color: #00ff00;
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .github-text {
+            color: #888;
+            font-size: 12px;
+        }
+
+        /* Right side - Terminal Section */
+        .terminal-section {
+            flex: 1;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background-color: #1a1a1a;
+            padding: 10px 20px;
+            border-bottom: 1px solid #333;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .nav-item {
+            color: #00ff00;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-item:hover {
+            background-color: #00ff00;
+            color: #000;
+        }
+
+        .terminal-content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #000;
+        }
+
+        .terminal-line {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        /* Different text colors like in the original image */
+        .prompt {
+            color: #00ff00;
+            font-weight: bold;
+        }
+
+        .command {
+            color: #ffffff;
+        }
+
+        .output {
+            color: #ffffff;
+        }
+
+        .output.green {
+            color: #00ff00;
+        }
+
+        .output.purple {
+            color: #9d4edd;
+        }
+
+        .output.cyan {
+            color: #00d4ff;
+        }
+
+        .output.yellow {
+            color: #ffd60a;
+        }
+
+        .output.gray {
+            color: #888;
+        }
+
+        .help-section {
+            margin: 20px 0;
+        }
+
+        .help-title {
+            color: #00ff00;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .help-item {
+            margin-left: 20px;
+            margin-bottom: 5px;
+            color: #ffffff;
+        }
+
+        .command-name {
+            color: #9d4edd;
+            font-weight: bold;
+        }
+
+        .command-desc {
+            color: #888;
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            border-top: 1px solid #333;
+            padding-top: 15px;
+        }
+
+        .input-prompt {
+            color: #00ff00;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .command-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #ffffff;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            caret-color: #00ff00;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background-color: #00ff00;
+            animation: blink 1s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        /* Interactive card effect */
+        .interactive-card {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            padding: 15px;
+            color: #00ff00;
+            font-size: 12px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .profile-image-container:hover + .interactive-card,
+        .interactive-card:hover {
+            opacity: 1;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .profile-section {
+                width: 100%;
+                height: 300px;
+                position: relative;
+            }
+            
+            .hanging-container {
+                position: relative;
+                top: 60px;
+                left: auto;
+                transform: none;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .profile-image-container {
+                width: 150px;
+                height: 180px;
+            }
+            
+            .nav-menu {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .nav-item {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+        }
+
+        /* Status indicator at bottom */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            right: 0;
+            background-color: #1a1a1a;
+            color: #00ff00;
+            padding: 5px 15px;
+            font-size: 12px;
+            border-top: 1px solid #333;
+            border-left: 1px solid #333;
+        }
+
+        /* Matrix background effect */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.05;
+            z-index: -1;
+        }
+    </style>
 </head>
 <body>
-  <div class="matrix-bg" id="matrixBg"></div>
-  
-  <div class="terminal-container">
-    <div class="terminal">
-      <div class="terminal-header">
-        <div class="terminal-buttons">
-          <div class="btn close"></div>
-          <div class="btn minimize"></div>
-          <div class="btn maximize"></div>
+    <div class="matrix-bg" id="matrixBg"></div>
+    
+    <div class="container">
+        <!-- Left Side - Profile Image Section -->
+        <div class="profile-section">
+            <!-- Name at top corner -->
+            <div class="profile-header">
+                <div class="profile-name">ARYAN SINGH</div>
+                <div class="profile-title">Software Engineer</div>
+            </div>
+
+            <!-- Hanging image container -->
+            <div class="hanging-container">
+                <div class="hanging-string"></div>
+                <div class="profile-image-container">
+                    <!-- 🖼️ ATTACH YOUR IMAGE HERE: Replace this placeholder with your actual image -->
+                    <!-- Uncomment the line below and add your image path -->
+                    <img src="Profile for terminal.png" alt="Profile Picture" class="profile-image">
+                    
+                   
+                </div>
+               
+            </div>
+            
+            <!-- GitHub section at bottom -->
+            <div class="github-section">
+                <div class="github-icon" onclick="window.open('https://github.com/aryansingh0777raghav', '_blank')">
+                    GH
+                </div>
+            </div>
         </div>
-        <!-- 🔧 UPDATE: Change terminal title to match your username -->
-        <div class="terminal-title">aryan@portfolio-terminal</div>
-      </div>
-      
-      <div class="terminal-content">
-        <div id="output" class="output"></div>
-        <div class="input-line">
-          <!-- 🔧 UPDATE: Change prompt username -->
-          <span class="prompt">aryan@portfolio:~$</span>
-          <input type="text" id="commandInput" autocomplete="off" autofocus placeholder="Type 'help' to get started..." />
-          <span class="typing-indicator"></span>
+
+        <!-- Right Side - Terminal Section -->
+        <div class="terminal-section">
+            <!-- Navigation Header -->
+            <div class="terminal-header">
+                <div class="nav-menu">
+                    <span class="nav-item" onclick="executeCommand('help')">help</span>
+                    <span class="nav-item" onclick="executeCommand('about')">about</span>
+                    <span class="nav-item" onclick="executeCommand('projects')">projects</span>
+                    <span class="nav-item" onclick="executeCommand('skills')">skills</span>
+                    <span class="nav-item" onclick="executeCommand('experience')">experience</span>
+                    <span class="nav-item" onclick="executeCommand('contact')">contact</span>
+                    <span class="nav-item" onclick="executeCommand('education')">education</span>
+                    <span class="nav-item" onclick="executeCommand('certifications')">certifications</span>
+                    <span class="nav-item" onclick="executeCommand('leadership')">leadership</span>
+                    <span class="nav-item" onclick="executeCommand('sudo')">sudo</span>
+                    <span class="nav-item" onclick="executeCommand('clear')">clear</span>
+                </div>
+            </div>
+
+            <!-- Terminal Content -->
+            <div class="terminal-content" id="terminalContent">
+                <!-- Welcome Message -->
+                <div class="welcome-message">
+                    <div class="terminal-line">
+                        <span class="prompt">gatere@portfolio:~$</span> <span class="command">welcome</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output green">Hi, I'm Aryan Singh, a Software Engineer & AI Enthusiast.</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output"></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output purple">Welcome to my interactive portfolio terminal!</span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output cyan">Type 'help' to see available commands.</span>
+                    </div>
+                </div>
+
+                <!-- Help Section -->
+                <div class="help-section">
+                    <div class="terminal-line">
+                        <span class="prompt">gatere@portfolio:~$</span> <span class="command">help</span>
+                    </div>
+                    <div class="help-title">Available commands:</div>
+                    <div class="help-item"><span class="command-name">about</span>       <span class="command-desc">- Learn about me</span></div>
+                    <div class="help-item"><span class="command-name">projects</span>    <span class="command-desc">- View my projects</span></div>
+                    <div class="help-item"><span class="command-name">skills</span>      <span class="command-desc">- See my technical skills</span></div>
+                    <div class="help-item"><span class="command-name">experience</span>  <span class="command-desc">- My work experience</span></div>
+                    <div class="help-item"><span class="command-name">contact</span>     <span class="command-desc">- How to reach me</span></div>
+                    <div class="help-item"><span class="command-name">education</span>   <span class="command-desc">- My educational background</span></div>
+                    <div class="help-item"><span class="command-name">certifications</span> <span class="command-desc">- View my certifications</span></div>
+                    <div class="help-item"><span class="command-name">leadership</span>  <span class="command-desc">- Leadership and community involvement</span></div>
+                    <div class="help-item"><span class="command-name">clear</span>       <span class="command-desc">- Clear the terminal</span></div>
+                    <div class="terminal-line">
+                        <span class="output"></span>
+                    </div>
+                    <div class="terminal-line">
+                        <span class="output yellow">Type any command to continue...</span>
+                    </div>
+                </div>
+
+                <!-- Command Input -->
+                <div class="input-line">
+                    <span class="input-prompt">gatere@portfolio:~$</span>
+                    <input type="text" class="command-input" id="commandInput" placeholder="" autofocus>
+                    <span class="cursor"></span>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  
-  <div class="status-bar">
-    <!-- 🔧 UPDATE: Change status bar text -->
-    <div class="primary">Terminal Portfolio v2.0</div>
-    <div class="secondary" id="statusTime"></div>
-  </div>
 
-  <script>
-    const output = document.getElementById('output');
-    const commandInput = document.getElementById('commandInput');
-    const statusTime = document.getElementById('statusTime');
-    
-    // 📝 UPDATE ALL: Replace with your personal information
-    const portfolioData = {
-      name: "Aryan Singh", // 🔧 UPDATE: Your full name
-      title: "Computer Science Student & Python Trainee", // 🔧 UPDATE: Your current title/role
-      tagline: "Innovating the Future", // 🔧 UPDATE: Your personal tagline
-      description: "A passionate technologist dedicated to expanding knowledge and skills in a challenging environment.", // 🔧 UPDATE: Your description
-      location: "Koni, khalilabad, Sant Kabir Nagar, India", // 🔧 UPDATE: Your location
-      email: "aryansingh979211@gmail.com", // 🔧 UPDATE: Your email
-      github: "https://github.com/aryansingh0777raghav", // 🔧 UPDATE: Your GitHub URL
-      linkedin: "https://www.linkedin.com/in/aryan-singh-616986257/", // 🔧 UPDATE: Your LinkedIn URL
-      skills: ["C", "C++", "HTML", "Python", "Data Structures & Algorithms"], // 🔧 UPDATE: Your skills array
-      // 🔧 UPDATE: Your current training/job information
-      training: {
-        title: "Python Training",
-        organization: "Data Culture Technology",
-        period: "June 2025 – Present",
-        description: "Learning core Python concepts, including data types, functions, OOP, and real-world implementation through hands-on exercises."
-      },
-      // 🔧 UPDATE: Your education history
-      education: [
-        {
-          degree: "Bachelor of Computer Applications (BCA)",
-          institution: "Institute of Technology and Management, Deen Dayal Upadhyay University",
-          year: "2027 (Expected)",
-          status: "Pursuing"
-        },
-        {
-          degree: "12th (Intermediate)",
-          institution: "PSNC Inter College, Nathnagar, Sant Kabir Nagar",
-          year: "2024",
-          board: "CBSE",
-          percentage: "67%"
-        },
-        {
-          degree: "10th (High School)",
-          institution: "Surya International Academy, Khalilabad, Sant Kabir Nagar",
-          year: "2022",
-          board: "CBSE",
-          percentage: "60%"
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span id="currentTime"></span>
+    </div>
+
+    <script>
+        // Portfolio data
+        const portfolioData = {
+            name: "Aryan Singh",
+            title: "Software Engineer & AI Enthusiast",
+            email: "aryansingh979211@gmail.com",
+            github: "https://github.com/aryansingh0777raghav",
+            linkedin: "https://www.linkedin.com/in/aryan-singh-616986257/",
+            location: "Koni, khalilabad, Sant Kabir Nagar, India",
+            skills: ["C", "C++", "HTML", "Python", "Data Structures & Algorithms", "AI/ML"],
+            education: [
+                {
+                    degree: "Bachelor of Computer Applications (BCA)",
+                    institution: "Institute of Technology and Management, Deen Dayal Upadhyay University",
+                    year: "2027 (Expected)",
+                    status: "Pursuing"
+                },
+                {
+                    degree: "12th (Intermediate)",
+                    institution: "PSNC Inter College, Nathnagar, Sant Kabir Nagar",
+                    year: "2024",
+                    board: "CBSE",
+                    percentage: "67%"
+                }
+            ]
+        };
+
+        // Commands with colored output
+        const commands = {
+            help: () => {
+                return `<span class="output green">Available commands:</span>
+<span class="output purple">about</span>       <span class="output gray">- Learn about me</span>
+<span class="output purple">projects</span>    <span class="output gray">- View my projects</span>
+<span class="output purple">skills</span>      <span class="output gray">- See my technical skills</span>
+<span class="output purple">experience</span>  <span class="output gray">- My work experience</span>
+<span class="output purple">contact</span>     <span class="output gray">- How to reach me</span>
+<span class="output purple">education</span>   <span class="output gray">- My educational background</span>
+<span class="output purple">certifications</span> <span class="output gray">- View my certifications</span>
+<span class="output purple">leadership</span>  <span class="output gray">- Leadership and community involvement</span>
+<span class="output purple">clear</span>       <span class="output gray">- Clear the terminal</span>
+
+<span class="output yellow">Type any command to continue...</span>`;
+            },
+
+            about: () => {
+                return `<span class="output green">Hi, I'm ${portfolioData.name}!</span>
+
+<span class="output cyan">${portfolioData.title}</span>
+
+<span class="output">I'm a passionate technologist dedicated to expanding knowledge and skills 
+in a challenging environment. Currently pursuing BCA and undergoing Python 
+training at Data Culture Technology.</span>
+
+<span class="output purple">Location:</span> <span class="output">${portfolioData.location}</span>
+<span class="output purple">Interests:</span> <span class="output">Coding, AI for Project Management, Exploring New Technologies</span>`;
+            },
+
+            skills: () => {
+                return `<span class="output green">Technical Skills:</span>
+${portfolioData.skills.map(skill => `<span class="output cyan">•</span> <span class="output">${skill}</span>`).join('\n')}
+
+<span class="output purple">Currently Learning:</span>
+<span class="output cyan">•</span> <span class="output">Advanced Python concepts (OOP, Data Types, Functions)</span>
+<span class="output cyan">•</span> <span class="output">Data Structures & Algorithms optimization</span>
+<span class="output cyan">•</span> <span class="output">Real-world implementation techniques</span>`;
+            },
+
+            education: () => {
+                let eduText = '<span class="output green">Educational Background:</span>\n\n';
+                portfolioData.education.forEach(edu => {
+                    eduText += `<span class="output purple">${edu.degree}</span> ${edu.status ? `<span class="output yellow">(${edu.status})</span>` : ''}\n`;
+                    eduText += `<span class="output">${edu.institution}</span>\n`;
+                    eduText += `<span class="output cyan">Year:</span> <span class="output">${edu.year}</span>`;
+                    if (edu.board) eduText += ` <span class="output gray">|</span> <span class="output">${edu.board}</span>`;
+                    if (edu.percentage) eduText += ` <span class="output gray">|</span> <span class="output">${edu.percentage}</span>`;
+                    eduText += '\n\n';
+                });
+                return eduText;
+            },
+
+            contact: () => {
+                return `<span class="output green">Contact Information:</span>
+
+<span class="output purple">Email:</span> <span class="output cyan">${portfolioData.email}</span>
+<span class="output purple">GitHub:</span> <span class="output cyan">${portfolioData.github}</span>
+<span class="output purple">LinkedIn:</span> <span class="output cyan">${portfolioData.linkedin}</span>
+<span class="output purple">Location:</span> <span class="output">${portfolioData.location}</span>
+
+<span class="output yellow">Let's connect and collaborate on exciting projects!</span>`;
+            },
+
+            projects: () => {
+                return `<span class="output green">My Projects:</span>
+
+<span class="output purple">🚧 Portfolio Terminal</span> <span class="output gray">- Interactive terminal-style portfolio (Current)</span>
+<span class="output purple">📱 AI Chat Bot</span> <span class="output gray">- Python-based intelligent chatbot</span>
+<span class="output purple">🔍 Data Analysis Tool</span> <span class="output gray">- C++ application for data processing</span>
+
+<span class="output cyan">Visit my GitHub for latest updates:</span> <span class="output yellow">${portfolioData.github}</span>`;
+            },
+
+            experience: () => {
+                return `<span class="output green">Work Experience:</span>
+
+<span class="output purple">Python Training</span>
+<span class="output cyan">Data Culture Technology</span> <span class="output gray">| June 2025 – Present</span>
+<span class="output">• Learning core Python concepts including data types, functions, OOP</span>
+<span class="output">• Hands-on exercises and real-world implementation</span>
+<span class="output">• Building practical solutions through coding</span>`;
+            },
+
+            certifications: () => {
+                return `<span class="output green">Certifications:</span>
+
+<span class="output purple">🎓 Python Training Certificate</span> <span class="output yellow">(In Progress)</span>
+   <span class="output cyan">Data Culture Technology - 2025</span>
+
+<span class="output purple">📚 Additional certifications coming soon...</span>`;
+            },
+
+            leadership: () => {
+                return `<span class="output green">Leadership & Community:</span>
+
+<span class="output purple">🌟</span> <span class="output">Continuous learner with problem-solving mindset</span>
+<span class="output purple">🚀</span> <span class="output">Passionate about sharing knowledge and helping others</span>
+<span class="output purple">💡</span> <span class="output">Active in exploring and implementing new technologies</span>
+<span class="output purple">🎯</span> <span class="output">Focused on building innovative solutions</span>`;
+            },
+
+            sudo: () => {
+                return `<span class="output">[sudo] password for gatere:</span> 
+<span class="output">Sorry, try again.</span>
+<span class="output">[sudo] password for gatere:</span>
+<span class="output">Sorry, try again.</span>
+<span class="output">[sudo] password for gatere:</span>
+<span class="output yellow">sudo: 3 incorrect password attempts</span>
+
+<span class="output purple">Nice try! 😄</span>`;
+            },
+
+            clear: () => {
+                document.getElementById('terminalContent').innerHTML = `
+                    <div class="input-line">
+                        <span class="input-prompt">gatere@portfolio:~$</span>
+                        <input type="text" class="command-input" id="commandInput" placeholder="" autofocus>
+                        <span class="cursor"></span>
+                    </div>
+                `;
+                setupCommandInput();
+                return '';
+            }
+        };
+
+        // Execute command function
+        function executeCommand(cmd) {
+            const terminalContent = document.getElementById('terminalContent');
+            const inputLine = terminalContent.querySelector('.input-line');
+            
+            // Add command to terminal
+            const commandLine = document.createElement('div');
+            commandLine.className = 'terminal-line';
+            commandLine.innerHTML = `<span class="prompt">gatere@portfolio:~$</span> <span class="command">${cmd}</span>`;
+            
+            // Add output
+            const outputDiv = document.createElement('div');
+            outputDiv.className = 'terminal-line';
+            
+            if (commands[cmd]) {
+                const result = commands[cmd]();
+                if (result) {
+                    outputDiv.innerHTML = result.replace(/\n/g, '<br>');
+                }
+            } else if (cmd.trim() === '') {
+                outputDiv.innerHTML = '';
+            } else {
+                outputDiv.innerHTML = `<span class="output" style="color: #ff5757;">Command not found:</span> <span class="output purple">${cmd}</span><br><span class="output gray">Type <span class="output green">'help'</span> for available commands.</span>`;
+            }
+            
+            // Insert before input line
+            terminalContent.insertBefore(commandLine, inputLine);
+            if (outputDiv.innerHTML) {
+                terminalContent.insertBefore(outputDiv, inputLine);
+            }
+            
+            // Add spacing
+            const spacer = document.createElement('div');
+            spacer.className = 'terminal-line';
+            spacer.innerHTML = '<span class="output"></span>';
+            terminalContent.insertBefore(spacer, inputLine);
+            
+            // Scroll to bottom
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+            
+            // Clear and focus input
+            const input = document.getElementById('commandInput');
+            if (input) {
+                input.value = '';
+                input.focus();
+            }
         }
-      ],
-      // 🔧 UPDATE: Your interests
-      interests: ["Coding", "AI for Project Management", "Exploring New Technologies", "Movies", "Music"],
-      // 🔧 UPDATE: Languages you speak
-      languages: ["Hindi", "English"],
-      // 🔧 UPDATE: Your career aspirations
-      aspirations: [
-        "Seeking a challenging position in a reputable organisation",
-        "Expanding knowledge in cutting-edge technologies",
-        "Enhancing technical abilities in practical settings"
-      ]
-    };
 
-    // 🔧 ADD/REMOVE: Commands system - add or remove commands as needed
-    const commands = {
-      help: () => {
-        return `<span class="section-header primary">📚 Available Commands</span>
+        // Setup command input
+        function setupCommandInput() {
+            const input = document.getElementById('commandInput');
+            if (input) {
+                input.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const command = input.value.trim();
+                        executeCommand(command);
+                    }
+                });
+                input.focus();
+            }
+        }
 
-<div class="command-grid">
-  <div class="command-item">
-    <span class="success">help</span> - Show this help menu
-  </div>
-  <div class="command-item">
-    <span class="success">about</span> - Learn about ${portfolioData.name}
-  </div>
-  <div class="command-item">
-    <span class="success">skills</span> - View technical skills
-  </div>
-  <div class="command-item">
-    <span class="success">education</span> - Academic background
-  </div>
-  <div class="command-item">
-    <span class="success">training</span> - Current training details
-  </div>
-  <div class="command-item">
-    <span class="success">contact</span> - Get contact information
-  </div>
-  <div class="command-item">
-    <span class="success">social</span> - Social media links
-  </div>
-  <div class="command-item">
-    <span class="success">interests</span> - Personal interests
-  </div>
-  <div class="command-item">
-    <span class="success">goals</span> - Career aspirations
-  </div>
-  <div class="command-item">
-    <span class="success">clear</span> - Clear terminal
-  </div>
-  <div class="command-item">
-    <span class="success">whoami</span> - Current user
-  </div>
-  <div class="command-item">
-    <span class="success">date</span> - Current date & time
-  </div>
-  <!-- 🔧 ADD: Add more command items here if you create new commands -->
-</div>
+        // Create matrix background effect
+        function createMatrixEffect() {
+            const canvas = document.createElement('canvas');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.getElementById('matrixBg').appendChild(canvas);
+            
+            const ctx = canvas.getContext('2d');
+            const chars = '01';
+            const fontSize = 14;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+            
+            for (let i = 0; i < columns; i++) {
+                drops[i] = 1;
+            }
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = 'rgba(0, 255, 0, 0.1)';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(draw, 35);
+        }
 
-<span class="warning">💡 Tip:</span> <span class="muted">Use Tab for command completion suggestions</span>`;
-      },
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString();
+        }
 
-      about: () => {
-        // 🔧 CUSTOMIZE: Modify the about section content
-        return `<span class="section-header primary">🚀 ${portfolioData.name}</span>
-
-<span class="secondary">${portfolioData.title}</span>
-<span class="accent">${portfolioData.tagline}</span>
-
-${portfolioData.description}
-
-<span class="success">🎯 Current Focus:</span>
-• Pursuing Bachelor of Computer Applications (BCA)
-• Undergoing Python Training at Data Culture Technology
-• Exploring Data Structures & Algorithms in C++
-• Building innovative solutions through coding
-
-<span class="warning">🌟 Key Strengths:</span>
-• Strong foundation in C and C++ programming
-• Hands-on experience with Python development
-• Passionate about AI and emerging technologies
-• Continuous learner with problem-solving mindset
-
-<span class="primary">📍 Location:</span> ${portfolioData.location}`;
-      },
-
-      skills: () => {
-        // 🔧 CUSTOMIZE: Skills display logic
-        const skillsList = portfolioData.skills.map((skill, index) => {
-          const colors = ['primary', 'secondary', 'accent', 'warning', 'success'];
-          const color = colors[index % colors.length];
-          return `<span class="${color}">▸ ${skill}</span>`;
-        }).join('\n');
+        // Initialize
+        setupCommandInput();
+        updateTime();
+        setInterval(updateTime, 1000);
+        createMatrixEffect();
         
-        return `<span class="section-header primary">💻 Technical Skills</span>
-
-${skillsList}
-
-<span class="success">🔥 Currently Learning:</span>
-• Advanced Python concepts (OOP, Data Types, Functions)
-• Data Structures & Algorithms optimization
-• Real-world implementation techniques
-
-<span class="warning">⚡ Specializations:</span>
-• Robust application development with C/C++
-• Problem-solving with algorithmic thinking
-• Python development for practical solutions`;
-      },
-
-      education: () => {
-        // 🔧 CUSTOMIZE: Education display format
-        let eduText = `<span class="section-header primary">🎓 Educational Journey</span>\n\n`;
-        
-        portfolioData.education.forEach((edu, index) => {
-          const status = edu.status ? ` (${edu.status})` : '';
-          const percentage = edu.percentage ? ` | ${edu.percentage}` : '';
-          const board = edu.board ? ` | ${edu.board}` : '';
-          
-          eduText += `<span class="success">${edu.degree}</span>${status}
-   <span class="secondary">${edu.institution}</span>
-   <span class="warning">Year:</span> ${edu.year}${board}${percentage}
-
-`;
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            const canvas = document.querySelector('#matrixBg canvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
         });
-        
-        return eduText;
-      },
-
-      training: () => {
-        // 🔧 CUSTOMIZE: Training/Work experience section
-        return `<span class="section-header primary">🏆 Current Training</span>
-
-<span class="success">${portfolioData.training.title}</span>
-<span class="secondary">${portfolioData.training.organization}</span>
-<span class="warning">Duration:</span> ${portfolioData.training.period}
-
-<span class="accent">📚 Learning Objectives:</span>
-${portfolioData.training.description}
-
-<span class="primary">🎯 Key Areas:</span>
-• Core Python programming concepts
-• Data types and their applications
-• Function development and optimization
-• Object-Oriented Programming (OOP)
-• Real-world implementation strategies
-• Hands-on coding exercises`;
-      },
-
-      contact: () => {
-        // 🔧 CUSTOMIZE: Contact information display
-        return `<span class="section-header primary">📧 Contact Information</span>
-
-<span class="warning">Email:</span> <span class="link" onclick="window.open('mailto:${portfolioData.email}', '_blank')">${portfolioData.email}</span>
-<span class="warning">Location:</span> ${portfolioData.location}
-<span class="warning">Languages:</span> ${portfolioData.languages.join(', ')}
-
-<span class="success">💬 Let's connect and collaborate on exciting projects!</span>
-<span class="muted">Available for internships, projects, and learning opportunities.</span>`;
-      },
-
-      social: () => {
-        // 🔧 UPDATE: Add/remove social media links
-        return `<span class="section-header primary">🌐 Social Media & Links</span>
-
-<span class="warning">GitHub:</span> <span class="link" onclick="window.open('${portfolioData.github}', '_blank')">${portfolioData.github}</span>
-<span class="warning">LinkedIn:</span> <span class="link" onclick="window.open('${portfolioData.linkedin}', '_blank')">${portfolioData.linkedin}</span>
-<span class="warning">Portfolio:</span> <span class="link" onclick="window.open('https://aryan-singh-9j0pn0j.gamma.site/', '_blank')">aryan-singh-9j0pn0j.gamma.site</span>
-
-<span class="success">🚀 Follow me for updates on my coding journey!</span>`;
-      },
-
-      interests: () => {
-        // 🔧 CUSTOMIZE: Interests section
-        const interestsList = portfolioData.interests.map(interest => 
-          `<span class="accent">❤️</span> ${interest}`
-        ).join('\n');
-        
-        return `<span class="section-header primary">🎯 Passions & Pursuits</span>
-
-${interestsList}
-
-<span class="success">🔍 What drives me:</span>
-• Building innovative solutions through code
-• Leveraging AI for optimizing project efficiency
-• Constantly exploring emerging technologies
-• Driven by curiosity to acquire new skills
-
-<span class="warning">🎬 Personal Time:</span>
-Beyond technology, I enjoy movies and music for creative inspiration and relaxation.`;
-      },
-
-      goals: () => {
-        // 🔧 CUSTOMIZE: Career goals section
-        const goalsList = portfolioData.aspirations.map(goal => 
-          `<span class="success">🎯</span> ${goal}`
-        ).join('\n');
-        
-        return `<span class="section-header primary">🚀 Career Aspirations</span>
-
-${goalsList}
-
-<span class="accent">🌟 Vision:</span>
-To become a skilled software developer who contributes to innovative solutions
-and continuously grows in the ever-evolving field of technology.
-
-<span class="warning">🔥 Immediate Goals:</span>
-• Master Python programming fundamentals
-• Complete BCA with excellence
-• Gain practical experience through internships
-• Build a strong portfolio of projects`;
-      },
-
-      clear: () => {
-        output.innerHTML = '';
-        return '';
-      },
-
-      whoami: () => {
-        return `<span class="success">${portfolioData.name}</span> - ${portfolioData.title}`;
-      },
-
-      date: () => {
-        return `<span class="success">${new Date().toLocaleString()}</span>`;
-      }
-
-      // 🔧 ADD: Add new commands here
-      // Example:
-      // projects: () => {
-      //   return `<span class="section-header primary">🚀 My Projects</span>
-      //   Add your projects here...`;
-      // },
-    };
-
-    // Initialize terminal with welcome message
-    function initTerminal() {
-      // 🔧 CUSTOMIZE: Welcome message ASCII art and content
-      const welcomeMessage = `<span class="primary">
- ╔═══════════════════════════════════════════════════════════════════════════════╗
- ║                                                                               ║
- ║    █████╗ ██████╗ ██╗   ██╗ █████╗ ███╗   ██╗    ███████╗██╗███╗   ██╗ ██████╗ ██╗  ██╗ ║
- ║   ██╔══██╗██╔══██╗╚██╗ ██╔╝██╔══██╗████╗  ██║    ██╔════╝██║████╗  ██║██╔════╝ ██║  ██║ ║
- ║   ███████║██████╔╝ ╚████╔╝ ███████║██╔██╗ ██║    ███████╗██║██╔██╗ ██║██║  ███╗███████║ ║
- ║   ██╔══██║██╔══██╗  ╚██╔╝  ██╔══██║██║╚██╗██║    ╚════██║██║██║╚██╗██║██║   ██║██╔══██║ ║
- ║   ██║  ██║██║  ██║   ██║   ██║  ██║██║ ╚████║    ███████║██║██║ ╚████║╚██████╔╝██║  ██║ ║
- ║   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═══╝    ╚══════╝╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝ ║
- ║                                                                               ║
- ╚═══════════════════════════════════════════════════════════════════════════════╝
-</span>
-
-<span class="secondary">Welcome to ${portfolioData.name}'s Interactive Portfolio Terminal</span>
-<span class="accent">${portfolioData.tagline}</span>
-
-<span class="warning">🚀 System Information:</span>
-<span class="success">▸ Status:</span> Online and ready to connect
-<span class="success">▸ Mode:</span> Professional Portfolio Interface
-<span class="success">▸ Version:</span> Terminal Portfolio v2.0
-
-<span class="primary">💡 Quick Start:</span>
-• Type <span class="success">'help'</span> to explore all available commands
-• Type <span class="success">'about'</span> to learn more about me
-• Type <span class="success">'skills'</span> to view my technical abilities
-
-<span class="muted">Ready to explore my journey in technology...</span>
-
-`;
-      output.innerHTML = welcomeMessage;
-    }
-
-    // Enhanced command execution
-    function executeCommand(command) {
-      const cmd = command.trim().toLowerCase();
-      
-      // 🔧 CUSTOMIZE: Change prompt display
-      output.innerHTML += `<span class="prompt">aryan@portfolio:~$</span> <span class="secondary">${command}</span>\n`;
-      
-      if (commands[cmd]) {
-        const result = commands[cmd]();
-        if (result) {
-          output.innerHTML += result + '\n\n';
-        }
-      } else if (cmd === '') {
-        output.innerHTML += '\n';
-      } else {
-        // 🔧 CUSTOMIZE: Error message for unknown commands
-        output.innerHTML += `<span class="error">⚠️ Command not found:</span> <span class="accent">${command}</span>
-<span class="muted">Type <span class="success">'help'</span> for available commands.</span>\n\n`;
-      }
-      
-      // Smooth scroll to bottom
-      output.scrollTop = output.scrollHeight;
-    }
-
-    // Enhanced input handling
-    commandInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const command = commandInput.value;
-        executeCommand(command);
-        commandInput.value = '';
-      } else if (e.key === 'Tab') {
-        e.preventDefault();
-        // Simple tab completion for commands
-        const partial = commandInput.value.toLowerCase();
-        const matches = Object.keys(commands).filter(cmd => cmd.startsWith(partial));
-        if (matches.length === 1) {
-          commandInput.value = matches[0];
-        }
-      }
-    });
-
-    // Update status bar time
-    function updateTime() {
-      const now = new Date();
-      statusTime.textContent = now.toLocaleString();
-    }
-
-    // Create subtle matrix background effect
-    function createMatrixEffect() {
-      const canvas = document.createElement('canvas');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      document.getElementById('matrixBg').appendChild(canvas);
-      
-      const ctx = canvas.getContext('2d');
-      // 🔧 CUSTOMIZE: Change matrix characters
-      const chars = '01';
-      const fontSize = 14;
-      const columns = canvas.width / fontSize;
-      const drops = [];
-      
-      for (let i = 0; i < columns; i++) {
-        drops[i] = 1;
-      }
-      
-      function draw() {
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        
-        // 🔧 CUSTOMIZE: Change matrix effect color
-        ctx.fillStyle = 'rgba(0, 255, 161, 0.1)';
-        ctx.font = fontSize + 'px monospace';
-        
-        for (let i = 0; i < drops.length; i++) {
-          const text = chars[Math.floor(Math.random() * chars.length)];
-          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-          
-          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-            drops[i] = 0;
-          }
-          drops[i]++;
-        }
-      }
-      
-      // 🔧 CUSTOMIZE: Change matrix animation speed (lower = faster)
-      setInterval(draw, 35);
-    }
-
-    // Initialize everything
-    initTerminal();
-    updateTime();
-    setInterval(updateTime, 1000);
-    createMatrixEffect();
-    
-    // Handle window resize
-    window.addEventListener('resize', () => {
-      const canvas = document.querySelector('#matrixBg canvas');
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-    });
-  </script>
+    </script>
 </body>
 </html>
