@@ -61,7 +61,10 @@
             position: absolute;
             top: 120px;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translateX(-50%); /* Initial position */
+            cursor: grab;
+            /* This transition will handle the snap-back for the whole element */
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         /* String/rope effect */
@@ -99,8 +102,16 @@
             position: relative;
             overflow: hidden;
             transform-origin: top center;
-            cursor: pointer;
             animation: gentleSwing 4s ease-in-out infinite;
+            /* Transition for the rotation effect when dragging */
+            transition: transform 0.3s ease;
+        }
+
+        .hanging-container.dragging {
+            cursor: grabbing;
+        }
+        .hanging-container.dragging .profile-image-container {
+            animation: none !important; /* Disable swing while dragging */
         }
 
         .profile-image-container:hover {
@@ -791,6 +802,86 @@ ${portfolioData.skills.map(skill => `<span class="output cyan">•</span> <span 
             }
             
             setInterval(draw, 35);
+        }
+
+        // Draggable hanging container with snap-back effect
+        const hangingContainer = document.querySelector('.hanging-container');
+        const profileImageContainer = hangingContainer.querySelector('.profile-image-container');
+        const hangingString = document.querySelector('.hanging-string');
+
+        if (hangingContainer && profileImageContainer && hangingString) {
+            let isDragging = false;
+            let startX = 0;
+            let startY = 0;
+
+            const onInteractionStart = (e) => {
+                // Prevent dragging if it's not a primary mouse button click
+                if (e.type === 'mousedown' && e.button !== 0) return;
+
+                isDragging = true;
+                const pos = e.type === 'touchstart' ? e.touches[0] : e;
+                startX = pos.clientX;
+                startY = pos.clientY;
+
+                hangingContainer.classList.add('dragging');
+                // Temporarily disable transitions for smooth dragging
+                hangingContainer.style.transition = 'none';
+                profileImageContainer.style.transition = 'none';
+                hangingString.style.transition = 'none';
+
+                window.addEventListener('mousemove', onInteractionMove);
+                window.addEventListener('mouseup', onInteractionEnd);
+                window.addEventListener('touchmove', onInteractionMove, { passive: false });
+                window.addEventListener('touchend', onInteractionEnd);
+
+                e.preventDefault(); // Prevent default text selection/image drag
+            };
+
+            const onInteractionMove = (e) => {
+                if (!isDragging) return;
+                if (e.type === 'touchmove') e.preventDefault(); // Prevent scrolling on mobile
+
+                const pos = e.type === 'touchmove' ? e.touches[0] : e;
+                const deltaX = pos.clientX - startX;
+                const deltaY = pos.clientY - startY;
+
+                // Apply transform to the whole container, combining the initial centering with the drag
+                hangingContainer.style.transform = `translateX(calc(-50% + ${deltaX}px)) translateY(${deltaY}px)`;
+
+                // --- Optional physics-like effects ---
+                // 1. Stretch the string vertically when pulled down
+                const stringStretch = Math.max(0, deltaY);
+                hangingString.style.height = `calc(80px + ${stringStretch}px)`;
+
+                // 2. Rotate the image based on horizontal drag
+                const rotationAngle = deltaX / 20; // Adjust divisor for sensitivity
+                profileImageContainer.style.transform = `rotate(${rotationAngle}deg)`;
+            };
+
+            const onInteractionEnd = () => {
+                if (!isDragging) return;
+                isDragging = false;
+
+                hangingContainer.classList.remove('dragging');
+
+                // Re-enable transitions and reset styles to trigger the snap-back animations
+                hangingContainer.style.transition = '';
+                profileImageContainer.style.transition = '';
+                hangingString.style.transition = 'height 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+                hangingContainer.style.transform = 'translateX(-50%)'; // Snap back to center
+                profileImageContainer.style.transform = 'rotate(0deg)'; // Straighten image
+                hangingString.style.height = '80px'; // Reset string height
+
+                // Clean up global listeners
+                window.removeEventListener('mousemove', onInteractionMove);
+                window.removeEventListener('mouseup', onInteractionEnd);
+                window.removeEventListener('touchmove', onInteractionMove);
+                window.removeEventListener('touchend', onInteractionEnd);
+            };
+
+            hangingContainer.addEventListener('mousedown', onInteractionStart);
+            hangingContainer.addEventListener('touchstart', onInteractionStart, { passive: false });
         }
 
         // Update time
