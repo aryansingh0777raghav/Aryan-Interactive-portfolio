@@ -259,6 +259,15 @@
             color: #888;
         }
 
+        .output a {
+            color: #00d4ff; /* cyan */
+            text-decoration: underline;
+        }
+
+        .output a:hover {
+            color: #00ff00; /* green */
+        }
+
         .help-section {
             margin: 20px 0;
         }
@@ -613,11 +622,23 @@ ${portfolioData.skills.map(skill => `<span class="output cyan">•</span> <span 
             projects: () => {
                 return `<span class="output green">My Projects:</span>
 
-<span class="output purple">🚧 Portfolio Terminal</span> <span class="output gray">- Interactive terminal-style portfolio (Current)</span>
-<span class="output purple">📱 AI Chat Bot</span> <span class="output gray">- Python-based intelligent chatbot</span>
-<span class="output purple">🔍 Data Analysis Tool</span> <span class="output gray">- C++ application for data processing</span>
+<span class="output purple">🌐 AI-Powered Portfolio Website</span>
+<span class="output gray">- A personal portfolio website generated with the help of AI.</span>
+<span class="output cyan">Link: <a href="https://aryan-singh-9j0pn0j.gamma.site/" target="_blank">https://aryan-singh-9j0pn0j.gamma.site/</a></span>
 
-<span class="output cyan">Visit my GitHub for latest updates:</span> <span class="output yellow">${portfolioData.github}</span>`;
+<span class="output purple">🤖 Personal AI Voice Assistant</span>
+<span class="output gray">- A desktop assistant that performs PC tasks via voice commands. Built with Python, YouTube tutorials, and GitHub Copilot. (Not yet available online)</span>
+
+<span class="output purple">🚧 Portfolio Terminal</span>
+<span class="output gray">- This interactive terminal-style portfolio you are currently using.</span>
+
+<span class="output purple">📱 AI Chat Bot</span>
+<span class="output gray">- Python-based intelligent chatbot.</span>
+
+<span class="output purple">🔍 Data Analysis Tool</span>
+<span class="output gray">- C++ application for data processing.</span>
+
+<span class="output cyan">Visit my GitHub for latest updates: <a href="${portfolioData.github}" target="_blank">${portfolioData.github}</a></span>`;
             },
 
             experience: () => {
